@@ -165,11 +165,11 @@
                       />
                       <input
                         id="current-savings-input-range"
-                        v-model.number="carLoan"
+                        v-model.number="currentSavings"
                         type="range"
                         class="custom-range"
                         min="0"
-                        max="5000"
+                        max="500000"
                       />
                       <div class="invalid-feedback">
                         <span v-if="!$v.currentSavings.between || !$v.currentSavings.required">
@@ -281,44 +281,45 @@
                   </div>
 
                   <div v-if="!simpleView">
-                    <div id="credit-card-input-group" class="form-group">
-                      <label for="credit-card-input-field">closing Costs</label>
+                    <div id="closing-costs-input-group" class="form-group">
+                      <label for="closing-costs-input-field">Closing Costs</label>
                       <div class="input-group mb-2">
                         <div class="input-group-prepend">
                           <div class="input-group-text">$</div>
                         </div>
                         <input
-                          id="credit-card-input-field"
-                          v-model.number="$v.creditCard.$model"
+                          id="closing-costs-input-field"
+                          v-model.number="$v.closingCosts.$model"
                           type="number"
                           class="form-control"
                           :class="{
                           'is-invalid':
-                            $v.creditCard.$error || $v.creditCard.$invalid
+                            $v.closingCosts.$error || $v.closingCosts.$invalid
                         }"
                         />
                         <input
-                          id="credit-card-input-range"
-                          v-model.number="creditCard"
+                          id="closing-costs-input-range"
+                          v-model.number="closingCosts"
                           type="range"
                           class="custom-range"
-                          min="0"
-                          max="5000"
+                          min="100"
+                          max="50000"
+                          value="5000"
                         />
                         <div class="invalid-feedback">
                           <span
                             v-if="
-                            !$v.creditCard.between || !$v.creditCard.required
+                            !$v.closingCosts.between || !$v.closingCosts.required
                           "
                           >
                             {{ errorMsgPre }} ${{
                             Number(
-                            $v.creditCard.$params.between.min
+                            $v.closingCosts.$params.between.min
                             ).toLocaleString()
                             }}
                             and ${{
                             Number(
-                            $v.creditCard.$params.between.max
+                            $v.closingCosts.$params.between.max
                             ).toLocaleString()
                             }}
                           </span>
@@ -398,45 +399,46 @@
                         />
                       </div>
                     </div>
-                    <div id="property-tax-input-group" class="form-group">
-                      <label for="property-tax-input-field">Post Closing Reserves</label>
+                    <div id="post-closing-reserves-input-group" class="form-group">
+                      <label for="post-closing-reserves-input-field">Post Closing Reserves</label>
                       <div class="input-group mb-2">
                         <div class="input-group-prepend">
                           <div class="input-group-text">$</div>
                         </div>
                         <input
-                          id="property-tax-input-field"
-                          v-model.number="$v.propertyTax.$model"
+                          id="post-closing-reserves-input-field"
+                          v-model.number="$v.postClosingReserves.$model"
                           type="number"
                           class="form-control"
                           :class="{
                             'is-invalid':
-                              $v.propertyTax.$error || $v.propertyTax.$invalid
+                              $v.postClosingReserves.$error || $v.postClosingReserves.$invalid
                           }"
                         />
                         <input
-                          id="property-tax-input-range"
-                          v-model.number="propertyTax"
+                          id="post-closing-reserves-input-range"
+                          v-model.number="postClosingReserves"
                           type="range"
                           class="custom-range"
-                          min="400"
-                          max="25000"
+                          min="0"
+                          max="20000"
+                          value="1869.37"
                         />
                         <div class="invalid-feedback">
                           <span
                             v-if="
-                              !$v.propertyTax.between ||
-                                !$v.propertyTax.required
+                              !$v.postClosingReserves.between ||
+                                !$v.postClosingReserves.required
                             "
                           >
                             {{ errorMsgPre }} ${{
                             Number(
-                            $v.propertyTax.$params.between.min
+                            $v.postClosingReserves.$params.between.min
                             ).toLocaleString()
                             }}
                             and ${{
                             Number(
-                            $v.propertyTax.$params.between.max
+                            $v.postClosingReserves.$params.between.max
                             ).toLocaleString()
                             }}
                           </span>
@@ -479,7 +481,7 @@
                         <div class="card-main graph">
                           <div class="card-bottom">
                             <div class="row graph-content">
-                              <span class="card-header">Max Home Purchase Price:</span>
+                              <span class="card-header">Down Payment Cash Needed:</span>
                               <h2>
                                 ${{
                                 Math.round(maxHomePurchasePrice)
@@ -487,11 +489,11 @@
                               </h2>
                             </div>
                             <div class="row">
-                              <label class="col-8">Down Payment:</label>
+                              <label class="col-8">Monthly Deposit:</label>
                               <span class="col-4 right">${{ Math.round(downPayment) }}</span>
                             </div>
                             <div class="row">
-                              <label class="col-8">Mortgage Loan Amount:</label>
+                              <label class="col-8">Months To Goal:</label>
                               <span class="col-4 right">
                                 ${{
                                 Math.round(mortgageLoanAmount)
@@ -509,7 +511,7 @@
                       >
                         <div class="card-main">
                           <div class="card-top">
-                            <span class="card-header">Mortgage Loan Amount:</span>
+                            <span class="card-header">Down Payment Cash Needed:</span>
                             <h2>
                               ${{
                               Math.round(mortgageLoanAmount)
@@ -518,7 +520,7 @@
                           </div>
                           <div class="card-bottom">
                             <div class="row">
-                              <label class="col-8">MonthlyPayment:</label>
+                              <label class="col-8">Current Savings:</label>
                               <span class="col-4 right">
                                 ${{
                                 Math.round(totalMonthlyPayment)
@@ -526,7 +528,7 @@
                               </span>
                             </div>
                             <div class="row">
-                              <label class="col-8">Term:</label>
+                              <label class="col-8">Savings Goal:</label>
                               <span class="col-4 right">{{ term }} YRS</span>
                             </div>
                           </div>
@@ -604,22 +606,7 @@
         class="btn btn-block btn-primary"
         @click.prevent="isSubmitted = !isSubmitted"
       >Back to Calculator &#8677;</button>
-      <p>
-        These calculator results are estimates based on your inputs, a 36%* DTI
-        (debt-to-income) default setting, and other assumptions required to make
-        a preliminary calculation. Depending on your inputs, the default values
-        for property taxes, homeowner’s insurance and HOA fees may not be
-        accurate for your situation. Contact a bank, credit union, housing
-        advisor, or lender to determine your loan eligibility and accurate
-        costs. Fannie Mae does not offer mortgage loans to consumers and this in
-        no way indicates approval or financing of a mortgage loan.
-      </p>
-      <p>
-        * Lenders often use your DTI and other factors (i.e., underwriting
-        guidelines) to confirm eligibility and the type of loan you may be
-        offered. Lenders may require a higher or lower DTI percentage to
-        determine loan eligibility based on your individual financial situation.
-      </p>
+      <p>These calculator results are estimates based on your inputs. Contact a bank, credit union, housing advisor, or lender to determine accurate figures.</p>
     </div>
   </div>
 </template>
@@ -660,9 +647,17 @@ export default {
       required,
       between: between(3, 50)
     },
-    closingCost: {
+    closingCosts: {
       required,
-      between: between(3, 50)
+      between: between(100, 50000)
+    },
+    interestRatePercent: {
+      required,
+      between: between(2.5, 11)
+    },
+    postClosingReserves: {
+      required,
+      between: between(0, 20000)
     },
     grossIncome: {
       required,
@@ -679,11 +674,6 @@ export default {
     studentLoan: {
       required,
       between: between(0, 5000)
-    },
-
-    interestRatePercent: {
-      required,
-      between: between(2.5, 11)
     },
     hoi: {
       required,
@@ -801,12 +791,14 @@ export default {
         currentSavings: 5000,
         homePurchasePrice: 200000,
         downPaymentPercent: 5,
+        closingCosts: 5000,
+        interestRatePercent: 4.25,
+        term: 30,
+        postClosingReserves: 1869.37,
         grossIncome: 10,
         carLoan: 500,
         creditCard: 100,
         studentLoan: 150,
-        interestRatePercent: 4.25,
-        term: 30,
         hoi: 1200,
         hoa: 50,
         propertyTax: 1500,
@@ -822,16 +814,11 @@ export default {
       this.depositAmount = this.init().depositAmount;
       this.currentSavings = this.init().currentSavings;
       this.homePurchasePrice = this.init().homePurchasePrice;
-      this.grossIncome = this.init().grossIncome;
-      this.carLoan = this.init().carLoan;
-      this.creditCard = this.init().creditCard;
-      this.studentLoan = this.init().studentLoan;
       this.downPaymentPercent = this.init().downPaymentPercent;
+      this.closingCosts = this.init().closingCosts;
       this.interestRatePercent = this.init().interestRatePercent;
       this.term = this.init().term;
-      this.hoi = this.init().hoi;
-      this.hoa = this.init().hoa;
-      this.propertyTax = this.init().propertyTax;
+      this.postClosingReserves = this.init().postClosingReserves;
     },
     pv(rate, nper, pmt) {
       const x = (1 + rate) ** nper;
