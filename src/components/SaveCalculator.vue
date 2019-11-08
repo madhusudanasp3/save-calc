@@ -2,28 +2,52 @@
   <div class="sliders">
     <div v-if="!isSubmitted" id="sliders-page">
       <div class="col">
-        <div class="padding-around">
-          <p>Learn how much money and time you'll need to meet your down payment savings goal.</p>
-          <p
-            class="text-italic"
-          >Note: Calculators display default values. Enter new figures to override.</p>
-          <p>After entering your Months to Goal (or Monthly Deposit) and Current Savings, adjust the input fields/sliders to determine the Down Payment Cash Needed and the Monthly Deposit (or Months to Goal).</p>
+        <div class="row">
+          <div class="col">
+            <p>Learn how much money and time you'll need to meet your down payment savings goal.</p>
+            <p
+              class="text-italic"
+            >Note: Calculators display default values. Enter new figures to override.</p>
+            <p>After entering your Months to Goal (or Monthly Deposit) and Current Savings, adjust the input fields/sliders to determine the Down Payment Cash Needed and the Monthly Deposit (or Months to Goal).</p>
+          </div>
         </div>
         <div class="row">
           <div class="col">
             <form action>
-              <div>
-                <span
-                  class="tab"
-                  :class="{ activeTab: selectedTab === tab }"
-                  v-for="(tab, index) in tabs"
-                  @click="selectedTab = tab"
-                  :key="index"
-                >{{ tab }}</span>
-
-                <div v-show="selectedTab === 'Months To Goal'">
-                  <div class="row">
-                    <div id="input" class="col col-md-6">
+              <div class="row">
+                <div id="input" class="col col-md-6">
+                  <nav>
+                    <div id="results-nav-tab" class="nav nav-tabs" role="tablist">
+                      <a
+                        @click="tab = 0"
+                        id="nav-months-to-goal-tab"
+                        class="nav-item nav-link"
+                        data-toggle="tab"
+                        href="#nav-months-to-goal"
+                        role="tab"
+                        aria-controls="nav-months-to-goal"
+                        aria-selected="true"
+                      >Months To Goal</a>
+                      <a
+                        @click="tab = 1"
+                        id="nav-monthly-deposit-tab"
+                        class="nav-item nav-link"
+                        data-toggle="tab"
+                        href="#nav-monthly-deposit"
+                        role="tab"
+                        aria-controls="nav-monthly-deposit"
+                        aria-selected="false"
+                      >Monthly Deposit</a>
+                    </div>
+                  </nav>
+                  <div id="nav-tabContent" class="tab-content">
+                    <div
+                      id="nav-months-to-goal"
+                      class="tab-pane"
+                      :class="{ 'show active': tab === 0 }"
+                      role="tabpanel"
+                      aria-labelledby="nav-months-to-goal-tab"
+                    >
                       <div id="Months-to-Goal-input-group" class="form-group">
                         <label for="Months-to-Goal-input-field">Months To Goal</label>
                         <div class="input-group mb-2">
@@ -67,11 +91,13 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div v-show="selectedTab === 'Monthly Deposit'">
-                  <div class="row">
-                    <div id="input" class="col col-md-6">
+                    <div
+                      id="nav-monthly-deposit"
+                      class="tab-pane"
+                      :class="{'show active': tab === 1 }"
+                      role="tabpanel"
+                      aria-labelledby="nav-monthly-deposit-tab"
+                    >
                       <div id="deposit-amount-input-group" class="form-group">
                         <label for="deposit-amount-input-field">Deposit Amount</label>
                         <div class="input-group mb-2">
@@ -89,7 +115,7 @@
                         }"
                           />
                           <div class="input-group-append">
-                            <div class="input-group-text">/mo</div>
+                            <div class="input-group-text">/MO</div>
                           </div>
                           <input
                             id="deposit-amount-input-range"
@@ -122,10 +148,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div class="row">
-                <div id="input" class="col col-md-6">
                   <div id="current-savings-input-group" class="form-group">
                     <label for="current-savings-input-field">Current Savings</label>
                     <div class="input-group mb-2">
@@ -134,11 +156,11 @@
                       </div>
                       <input
                         id="current-savings-input-field"
-                        v-model.number="$v.carLoan.$model"
+                        v-model.number="$v.currentSavings.$model"
                         type="number"
                         class="form-control"
                         :class="{
-                          'is-invalid': $v.carLoan.$error || $v.carLoan.$invalid
+                          'is-invalid': $v.currentSavings.$error || $v.currentSavings.$invalid
                         }"
                       />
                       <input
@@ -150,59 +172,59 @@
                         max="5000"
                       />
                       <div class="invalid-feedback">
-                        <span v-if="!$v.carLoan.between || !$v.carLoan.required">
+                        <span v-if="!$v.currentSavings.between || !$v.currentSavings.required">
                           {{ errorMsgPre }} ${{
                           Number(
-                          $v.carLoan.$params.between.min
+                          $v.currentSavings.$params.between.min
                           ).toLocaleString()
                           }}
                           and ${{
                           Number(
-                          $v.carLoan.$params.between.max
+                          $v.currentSavings.$params.between.max
                           ).toLocaleString()
                           }}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div id="credit-card-input-group" class="form-group">
-                    <label for="credit-card-input-field">Home Purchase Price</label>
+                  <div id="home-purchase-price-input-group" class="form-group">
+                    <label for="home-purchase-price-input-field">Home Purchase Price</label>
                     <div class="input-group mb-2">
                       <div class="input-group-prepend">
                         <div class="input-group-text">$</div>
                       </div>
                       <input
-                        id="credit-card-input-field"
-                        v-model.number="$v.creditCard.$model"
+                        id="home-purchase-price-input-field"
+                        v-model.number="$v.homePurchasePrice.$model"
                         type="number"
                         class="form-control"
                         :class="{
                           'is-invalid':
-                            $v.creditCard.$error || $v.creditCard.$invalid
+                            $v.homePurchasePrice.$error || $v.homePurchasePrice.$invalid
                         }"
                       />
                       <input
-                        id="credit-card-input-range"
-                        v-model.number="creditCard"
+                        id="home-purchase-price-input-range"
+                        v-model.number="homePurchasePrice"
                         type="range"
                         class="custom-range"
-                        min="0"
-                        max="5000"
+                        min="10000"
+                        max="1000000"
                       />
                       <div class="invalid-feedback">
                         <span
                           v-if="
-                            !$v.creditCard.between || !$v.creditCard.required
+                            !$v.homePurchasePrice.between || !$v.homePurchasePrice.required
                           "
                         >
                           {{ errorMsgPre }} ${{
                           Number(
-                          $v.creditCard.$params.between.min
+                          $v.homePurchasePrice.$params.between.min
                           ).toLocaleString()
                           }}
                           and ${{
                           Number(
-                          $v.creditCard.$params.between.max
+                          $v.homePurchasePrice.$params.between.max
                           ).toLocaleString()
                           }}
                         </span>
@@ -323,7 +345,7 @@
                         </div>
                         <input
                           id="interest-rate-input-range"
-                          v-model.number="interestRate"
+                          v-model.number="interestRatePercent"
                           type="range"
                           class="custom-range"
                           min="2.5"
@@ -428,31 +450,31 @@
                     <nav>
                       <div id="results-nav-tab" class="nav nav-tabs" role="tablist">
                         <a
-                          id="nav-purchase-info-tab"
+                          id="nav-deposit-details-tab"
                           class="nav-item nav-link active"
                           data-toggle="tab"
-                          href="#nav-purchase-info"
+                          href="#nav-deposit-details"
                           role="tab"
-                          aria-controls="nav-purchase-info"
+                          aria-controls="nav-deposit-details"
                           aria-selected="true"
-                        >Purchase Info</a>
+                        >Deposit Details</a>
                         <a
-                          id="nav-payment-info-tab"
+                          id="nav-savings-goal-tab"
                           class="nav-item nav-link"
                           data-toggle="tab"
-                          href="#nav-payment-info"
+                          href="#nav-savings-goal"
                           role="tab"
-                          aria-controls="nav-payment-info"
+                          aria-controls="nav-savings-goal"
                           aria-selected="false"
-                        >Payment Info</a>
+                        >Savings Goal</a>
                       </div>
                     </nav>
                     <div id="nav-tabContent" class="tab-content">
                       <div
-                        id="nav-purchase-info"
+                        id="nav-deposit-details"
                         class="tab-pane fade show active"
                         role="tabpanel"
-                        aria-labelledby="nav-purchase-info"
+                        aria-labelledby="nav-deposit-details"
                       >
                         <div class="card-main graph">
                           <div class="card-bottom">
@@ -480,10 +502,10 @@
                         </div>
                       </div>
                       <div
-                        id="nav-payment-info"
+                        id="nav-savings-goal"
                         class="tab-pane fade"
                         role="tabpanel"
-                        aria-labelledby="nav-payment-info"
+                        aria-labelledby="nav-savings-goal"
                       >
                         <div class="card-main">
                           <div class="card-top">
@@ -606,6 +628,12 @@
 <script>
 import { required, between } from "vuelidate/lib/validators";
 
+const currency = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+  style: "currency",
+  currency: "USD"
+});
 export default {
   name: "SaveCalculator",
   data() {
@@ -624,6 +652,18 @@ export default {
       required,
       between: between(0, 500000)
     },
+    homePurchasePrice: {
+      required,
+      between: between(10000, 1000000)
+    },
+    downPaymentPercent: {
+      required,
+      between: between(3, 50)
+    },
+    closingCost: {
+      required,
+      between: between(3, 50)
+    },
     grossIncome: {
       required,
       between: between(1, 24)
@@ -640,10 +680,7 @@ export default {
       required,
       between: between(0, 5000)
     },
-    downPaymentPercent: {
-      required,
-      between: between(3, 50)
-    },
+
     interestRatePercent: {
       required,
       between: between(2.5, 11)
@@ -762,11 +799,12 @@ export default {
         monthsToGoal: 10,
         depositAmount: 1187,
         currentSavings: 5000,
+        homePurchasePrice: 200000,
+        downPaymentPercent: 5,
         grossIncome: 10,
         carLoan: 500,
         creditCard: 100,
         studentLoan: 150,
-        downPaymentPercent: 5,
         interestRatePercent: 4.25,
         term: 30,
         hoi: 1200,
@@ -776,14 +814,14 @@ export default {
         dti: 0.36,
         closingCostMultiplier: 0.025,
         errorMsgPre: "Please enter a valid amount between",
-        tabs: ["Months To Goal", "Monthly Deposit"],
-        selectedTab: "Months To Goal"
+        tab: 0
       };
     },
     reset() {
       this.monthsToGoal = this.init().monthsToGoal;
       this.depositAmount = this.init().depositAmount;
-      this.currentSavings = this.init().depositAmount;
+      this.currentSavings = this.init().currentSavings;
+      this.homePurchasePrice = this.init().homePurchasePrice;
       this.grossIncome = this.init().grossIncome;
       this.carLoan = this.init().carLoan;
       this.creditCard = this.init().creditCard;
@@ -804,6 +842,9 @@ export default {
         return 0;
       }
       return n;
+    },
+    currencyFormat(n) {
+      return currency.format(n);
     }
   }
 };
