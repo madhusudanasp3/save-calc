@@ -198,6 +198,7 @@
                         v-model.number="$v.homePurchasePrice.$model"
                         type="number"
                         class="form-control"
+                        @input="calculateClosingCostAndPostClosingReserve"
                         :class="{
                           'is-invalid':
                             $v.homePurchasePrice.$error || $v.homePurchasePrice.$invalid
@@ -206,6 +207,7 @@
                       <input
                         id="home-purchase-price-input-range"
                         v-model.number="homePurchasePrice"
+                        @input="calculateClosingCostAndPostClosingReserve"
                         type="range"
                         class="custom-range"
                         min="10000"
@@ -386,7 +388,7 @@
                           <option selected>30</option>
                         </select>
                         <div class="input-group-append">
-                          <div class="input-group-text">yrs</div>
+                          <div class="input-group-text">YRS</div>
                         </div>
                         <input
                           id="term-input-range"
@@ -490,7 +492,7 @@
                             </div>
                             <div class="row">
                               <label class="col-8">Monthly Deposit:</label>
-                              <span class="col-4 right">${{ Math.round(downPayment) }}</span>
+                              <span class="col-4 right">{{ currencyFormat(depositAmount) }}</span>
                             </div>
                             <div class="row">
                               <label class="col-8">Months To Goal:</label>
@@ -819,6 +821,9 @@ export default {
       this.interestRatePercent = this.init().interestRatePercent;
       this.term = this.init().term;
       this.postClosingReserves = this.init().postClosingReserves;
+    },
+    calculateClosingCostAndPostClosingReserve() {
+      this.closingCosts = this.homePurchasePrice * 0.025;
     },
     pv(rate, nper, pmt) {
       const x = (1 + rate) ** nper;
