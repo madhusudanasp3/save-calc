@@ -19,7 +19,7 @@
                   <nav>
                     <div id="results-nav-tab" class="nav nav-tabs" role="tablist">
                       <a
-                        @click="tab = 0"
+                        @click="monthsToGoalTab"
                         id="nav-months-to-goal-tab"
                         class="nav-item nav-link"
                         data-toggle="tab"
@@ -29,7 +29,7 @@
                         aria-selected="true"
                       >Months To Goal</a>
                       <a
-                        @click="tab = 1"
+                        @click="monthyDepositTab"
                         id="nav-monthly-deposit-tab"
                         class="nav-item nav-link"
                         data-toggle="tab"
@@ -55,6 +55,7 @@
                             id="Months-to-Goal-input-field"
                             v-model.number="$v.monthsToGoal.$model"
                             type="number"
+                            @input="calculateMonthlyDeposit"
                             class="form-control"
                             :class="{
                           'is-invalid':
@@ -65,6 +66,7 @@
                             id="Months-to-Goal-input-range"
                             v-model.number="monthsToGoal"
                             type="range"
+                            @input="calculateMonthlyDeposit"
                             class="custom-range"
                             min="1"
                             max="60"
@@ -108,6 +110,7 @@
                             id="deposit-amount-input-field"
                             v-model.number="$v.depositAmount.$model"
                             type="number"
+                            @input="calculateMonthsToGoal"
                             class="form-control"
                             :class="{
                           'is-invalid':
@@ -121,6 +124,7 @@
                             id="deposit-amount-input-range"
                             v-model.number="depositAmount"
                             type="range"
+                            @input="calculateMonthsToGoal"
                             class="custom-range"
                             min="10"
                             max="10000"
@@ -158,6 +162,7 @@
                         id="current-savings-input-field"
                         v-model.number="$v.currentSavings.$model"
                         type="number"
+                        @input="currentSavingsDynamics"
                         class="form-control"
                         :class="{
                           'is-invalid': $v.currentSavings.$error || $v.currentSavings.$invalid
@@ -167,6 +172,7 @@
                         id="current-savings-input-range"
                         v-model.number="currentSavings"
                         type="range"
+                        @input="currentSavingsDynamics"
                         class="custom-range"
                         min="0"
                         max="500000"
@@ -240,6 +246,7 @@
                         id="down-payment-input-field"
                         v-model.number="$v.downPaymentPercent.$model"
                         type="number"
+                        @input="downPaymentDynamics"
                         class="form-control"
                         :class="{
                           'is-invalid':
@@ -254,6 +261,7 @@
                         id="down-payment-input-range"
                         v-model.number="downPaymentPercent"
                         type="range"
+                        @input="downPaymentDynamics"
                         class="custom-range"
                         min="3"
                         max="50"
@@ -485,20 +493,22 @@
                             <div class="row graph-content">
                               <span class="card-header">Down Payment Cash Needed:</span>
                               <h2>
-                                ${{
-                                Math.round(maxHomePurchasePrice)
+                                {{
+                                currencyFormat(fundsAtClosing)
                                 }}
                               </h2>
                             </div>
                             <div class="row">
                               <label class="col-8">Monthly Deposit:</label>
-                              <span class="col-4 right">{{ currencyFormat(depositAmount) }}</span>
+                              <span
+                                class="col-4 right"
+                              >{{ currencyFormat(this.monthlyDepositAmount) }}</span>
                             </div>
                             <div class="row">
                               <label class="col-8">Months To Goal:</label>
                               <span class="col-4 right">
-                                ${{
-                                Math.round(mortgageLoanAmount)
+                                {{
+                                Math.round(this.targetMonthsToGoal)
                                 }}
                               </span>
                             </div>
@@ -515,8 +525,8 @@
                           <div class="card-top">
                             <span class="card-header">Down Payment Cash Needed:</span>
                             <h2>
-                              ${{
-                              Math.round(mortgageLoanAmount)
+                              {{
+                              currencyFormat(fundsAtClosing)
                               }}
                             </h2>
                           </div>
@@ -524,14 +534,14 @@
                             <div class="row">
                               <label class="col-8">Current Savings:</label>
                               <span class="col-4 right">
-                                ${{
-                                Math.round(totalMonthlyPayment)
+                                {{
+                                currencyFormat(currentSavings)
                                 }}
                               </span>
                             </div>
                             <div class="row">
                               <label class="col-8">Savings Goal:</label>
-                              <span class="col-4 right">{{ term }} YRS</span>
+                              <span class="col-4 right">{{ currencyFormat(additionalSavings) }}</span>
                             </div>
                           </div>
                         </div>
@@ -579,17 +589,19 @@
           <div class="block-main-content">
             <div class="row">
               <label class="col-8">Additional Savings Required</label>
-              <span
-                class="col-4 block-main-content--right"
-              >{{ currencyFormat(maxHomePurchasePrice) }}</span>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(additionalSavings) }}</span>
             </div>
             <div class="row">
               <label class="col-8">Months to Goal</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ Math.round(this.targetMonthsToGoal) }} MO</span>
             </div>
             <div class="row">
               <label class="col-8">Deposit Amount</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ currencyFormat(this.monthlyDepositAmount) }}/MO</span>
             </div>
           </div>
 
@@ -608,19 +620,21 @@
           <div class="block-main-content">
             <div class="row">
               <label class="col-8">Total funds at closing</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(downPayment) }}</span>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(fundsAtClosing) }}</span>
             </div>
             <div class="row">
               <label class="col-8">Down Payment</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(closingCost) }}</span>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(downPayment) }}</span>
             </div>
             <div class="row">
               <label class="col-8">Closing Costs</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(closingCost) }}</span>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(this.closingCosts) }}</span>
             </div>
             <div class="row">
               <label class="col-8">Post Closing Reserves</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(closingCost) }}</span>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ currencyFormat(this.postClosingReserves) }}</span>
             </div>
           </div>
 
@@ -630,34 +644,34 @@
           <div class="block-main-content">
             <div class="row">
               <label class="col-8">Home Purchase Amount</label>
-              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ currencyFormat(this.homePurchasePrice) }}</span>
             </div>
             <div class="row">
               <label class="col-8">Mortgage Loan Amount</label>
-              <span class="col-4 block-main-content--right">{{ term }}</span>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
             </div>
             <div class="row">
               <label class="col-8">Principal & Interest (P&I) Payment</label>
-              <span class="col-4 block-main-content--right">{{ interestRatePercent }}/MO</span>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ currencyFormat(piPaymentMonthly) }}/MO</span>
             </div>
             <div class="row">
               <label class="col-8">Term</label>
-              <span
-                class="col-4 block-main-content--right"
-              >{{ currencyFormat(totalMonthlyPayment) }} YRS</span>
+              <span class="col-4 block-main-content--right">{{ term }} YRS</span>
             </div>
             <div class="block-main-content--padded">
               <div class="row">
                 <label class="col-8">Interest Rate</label>
                 <span
                   class="col-4 block-main-content--right"
-                >{{ currencyFormat( principalInterestPayment ) }}%</span>
+                >{{ formatNumber( interestRatePercent ) }}%</span>
               </div>
               <div class="row">
                 <label class="col-8">LTV</label>
-                <span
-                  class="col-4 block-main-content--right"
-                >{{ currencyFormat(propertyTaxMonthly) }}%</span>
+                <span class="col-4 block-main-content--right">{{ formatNumber(ltv) }}%</span>
               </div>
             </div>
           </div>
@@ -731,124 +745,42 @@ export default {
     postClosingReserves: {
       required,
       between: between(0, 20000)
-    },
-    carLoan: {
-      required,
-      between: between(0, 5000)
-    },
-    creditCard: {
-      required,
-      between: between(0, 5000)
-    },
-    studentLoan: {
-      required,
-      between: between(0, 5000)
-    },
-    hoi: {
-      required,
-      between: between(0, 24000)
-    },
-    hoa: {
-      required,
-      between: between(0, 1000)
-    },
-    propertyTax: {
-      required,
-      between: between(0, 40000)
     }
   },
   computed: {
-    maxHomePurchasePrice() {
-      const max = this.mortgageLoanAmount + this.downPayment;
-      return this.handleNegativeNums(max);
-    },
     downPayment() {
-      const down =
-        this.mortgageLoanAmount / (1 - this.downPaymentPercent / 100) -
-        this.mortgageLoanAmount;
+      const down = this.homePurchasePrice * (this.downPaymentPercent / 100);
       return this.handleNegativeNums(down);
     },
     mortgageLoanAmount() {
-      const loan = this.pv(
-        this.interestRate / 12,
-        this.term * 12,
-        this.principalInterestPayment
-      );
+      const loan = this.homePurchasePrice - this.downPayment;
       return this.handleNegativeNums(loan);
     },
-    loanToValue() {
-      return this.downPayment / this.mortgageLoanAmount;
+    ltv() {
+      return (this.mortgageLoanAmount / this.homePurchasePrice) * 100;
     },
-    estimatedMonthlyPayment() {
-      return this.currentSavings * this.dti - this.totalDebts;
+    fundsAtClosing() {
+      return this.downPayment + this.closingCosts + this.postClosingReserves;
     },
-    dtiPercent() {
-      return this.dti * 100;
+    additionalSavings() {
+      return this.fundsAtClosing - this.currentSavings;
     },
+
     interestRate() {
       return this.interestRatePercent / 100;
     },
-    closingCost() {
-      return Math.round(this.maxHomePurchasePrice * this.closingCostMultiplier);
-    },
-    totalMonthlyPayment() {
-      const payment =
-        this.propertyTaxMonthly +
-        this.hoiMonthly +
-        this.hoa +
-        this.monthlyMortagePremium +
-        this.principalInterestPayment;
-      if (this.maxHomePurchasePrice <= 0) {
-        return 0;
-      }
-      return this.handleNegativeNums(payment);
-    },
-    principalInterestPayment() {
-      if (this.estimatedMonthlyPayment <= 0) {
-        return 0;
-      }
-      const payment =
-        this.estimatedMonthlyPayment -
-        (this.propertyTaxMonthly +
-          this.hoiMonthly +
-          this.hoa +
-          this.monthlyMortagePremium);
-      return this.handleNegativeNums(payment);
-    },
-    pmi() {
-      if (this.downPaymentPercent >= 20) {
-        return 0;
-      }
-      if (this.downPaymentPercent >= 10) {
-        return 0.0044;
-      }
-      if (this.downPaymentPercent >= 5) {
-        return 0.0062;
-      }
-      return 0.011;
-    },
-    monthlyMortagePremium() {
-      if (this.guessLoanAmount <= 0) {
-        return 0;
-      }
-      const premium = (this.pmi * this.guessLoanAmount) / 12;
-      return this.handleNegativeNums(premium);
-    },
-    guessLoanAmount() {
-      return this.pv(
-        this.interestRate / 12,
-        this.term * 12,
-        this.estimatedMonthlyPayment - this.currentSavings * 0.05
-      );
-    },
-    totalDebts() {
-      return this.carLoan + this.creditCard + this.studentLoan;
-    },
-    propertyTaxMonthly() {
-      return this.propertyTax / 12;
-    },
-    hoiMonthly() {
-      return this.hoi / 12;
+
+    piPaymentMonthly() {
+      let payment = 0;
+      const termInMonths = this.term * 12;
+      const principal = this.homePurchasePrice - this.downPayment;
+      const monthlyInterest = this.interestRatePercent / 1200;
+      payment =
+        (principal * monthlyInterest) /
+        (1 - (1 / (1 + monthlyInterest)) ** termInMonths);
+      /* eslint-disable no-console */
+      console.log(`termin months : ${termInMonths}`);
+      return payment;
     }
   },
   methods: {
@@ -856,7 +788,9 @@ export default {
       return {
         isSubmitted: false,
         monthsToGoal: 10,
+        targetMonthsToGoal: 10,
         depositAmount: 1187,
+        monthlyDepositAmount: 1187,
         currentSavings: 5000,
         homePurchasePrice: 200000,
         downPaymentPercent: 5,
@@ -864,14 +798,7 @@ export default {
         interestRatePercent: 4.25,
         term: 30,
         postClosingReserves: 1869.37,
-        carLoan: 500,
-        creditCard: 100,
-        studentLoan: 150,
-        hoi: 1200,
-        hoa: 50,
-        propertyTax: 1500,
         simpleView: true,
-        dti: 0.36,
         closingCostMultiplier: 0.025,
         errorMsgPre: "Please enter a valid amount between",
         tab: 0
@@ -879,7 +806,9 @@ export default {
     },
     reset() {
       this.monthsToGoal = this.init().monthsToGoal;
+      this.targetMonthsToGoal = this.init().targetMonthsToGoal;
       this.depositAmount = this.init().depositAmount;
+      this.monthlyDepositAmount = this.init().monthlyDepositAmount;
       this.currentSavings = this.init().currentSavings;
       this.homePurchasePrice = this.init().homePurchasePrice;
       this.downPaymentPercent = this.init().downPaymentPercent;
@@ -890,6 +819,49 @@ export default {
     },
     calculateClosingCostAndPostClosingReserve() {
       this.closingCosts = this.homePurchasePrice * 0.025;
+      this.postClosingReserves = this.piPaymentMonthly * 2;
+      if (this.tab == 0) {
+        this.calculateMonthlyDeposit();
+      }
+      if (this.tab == 1) {
+        this.calculateMonthsToGoal();
+      }
+    },
+    downPaymentDynamics() {
+      if (this.tab == 0) {
+        this.calculateMonthlyDeposit();
+      }
+      if (this.tab == 1) {
+        this.calculateMonthsToGoal();
+      }
+    },
+    currentSavingsDynamics() {
+      if (this.tab == 0) {
+        this.calculateMonthlyDeposit();
+      }
+      if (this.tab == 1) {
+        this.calculateMonthsToGoal();
+      }
+    },
+    calculateMonthlyDeposit() {
+      if (this.tab == 0) {
+        this.monthlyDepositAmount = this.additionalSavings / this.monthsToGoal;
+        this.targetMonthsToGoal = this.monthsToGoal;
+      }
+    },
+    calculateMonthsToGoal() {
+      if (this.tab == 1) {
+        this.targetMonthsToGoal = this.additionalSavings / this.depositAmount;
+        this.monthlyDepositAmount = this.depositAmount;
+      }
+    },
+    monthsToGoalTab() {
+      this.tab = 0;
+      this.calculateMonthlyDeposit();
+    },
+    monthyDepositTab() {
+      this.tab = 1;
+      this.calculateMonthsToGoal();
     },
     pv(rate, nper, pmt) {
       const x = (1 + rate) ** nper;
