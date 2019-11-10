@@ -572,43 +572,114 @@
     </div>
     <div v-if="isSubmitted" id="result-page">
       <div class="col">
-        <ul class="list-group">
-          <p>YOU CAN POTENTIALLY AFFORD A MAX OF:</p>
-          <li
-            class="list-group-item"
-          >Max Home Purchase Price: ${{ Math.round(maxHomePurchasePrice) }}</li>
-          <li class="list-group-item">Mortgage Loan Amount: ${{ Math.round(mortgageLoanAmount) }}</li>
-          <p>WHAT YOU SHARED ABOUT YOUR FINANCIAL SITUATION:</p>
-          <li class="list-group-item">Gross Income: ${{ Math.round(grossIncome) }}</li>
-          <li class="list-group-item">Total Debts: ${{ Math.round(totalDebts) }}</li>
-          <li class="list-group-item">Car Loans: ${{ Math.round(carLoan) }}</li>
-          <li class="list-group-item">Credit Cards: ${{ Math.round(creditCard) }}</li>
-          <li class="list-group-item">Student Loans / Other Debts: ${{ Math.round(studentLoan) }}</li>
-          <li class="list-group-item">Debt to Income: {{ dtiPercent }}%</li>
-          <p>EXPECTED FUNDS NEEDED AT CLOSING:</p>
-          <li class="list-group-item">Down Payment: ${{ Math.round(downPayment) }}</li>
-          <li class="list-group-item">Closing Costs: ${{ Math.round(closingCost) }}</li>
-          <p>INFORMATION ABOUT YOUR POTENTIAL MORTGAGE:</p>
-          <li class="list-group-item">Mortgage Loan Amount: ${{ Math.round(mortgageLoanAmount) }}</li>
-          <li class="list-group-item">Term: {{ term }} years</li>
-          <li class="list-group-item">Interest Rate: {{ interestRatePercent }}%</li>
-          <li class="list-group-item">Total Mortgage Payment: ${{ Math.round(totalMonthlyPayment) }}</li>
-          <li class="list-group-item">
-            Principal Interest and Taxes: ${{
-            Math.round(principalInterestPayment)
-            }}
-          </li>
-          <li class="list-group-item">Property Taxes: ${{ Math.round(propertyTaxMonthly) }}</li>
-          <li class="list-group-item">Home Owners Insurance: ${{ Math.round(hoiMonthly) }}</li>
-          <li class="list-group-item">PMI: ${{ Math.round(monthlyMortagePremium) }}</li>
-          <li class="list-group-item">HOA Fees: ${{ Math.round(hoa) }}</li>
-        </ul>
+        <div class="block-main">
+          <div class="block-main-header">
+            <h3>INFORMATION ABOUT YOUR SAVINGS GOAL:</h3>
+          </div>
+          <div class="block-main-content">
+            <div class="row">
+              <label class="col-8">Additional Savings Required</label>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ currencyFormat(maxHomePurchasePrice) }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Months to Goal</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Deposit Amount</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
+            </div>
+          </div>
+
+          <div class="block-main-header">
+            <h3>WHAT YOU SHARED ABOUT YOUR FINANCIAL SITUATION:</h3>
+          </div>
+          <div class="block-main-content">
+            <div class="row">
+              <label class="col-8">Current Savings</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(currentSavings) }}</span>
+            </div>
+          </div>
+          <div class="block-main-header">
+            <h3>EXPECTED FUNDS NEEDED AT CLOSING:</h3>
+          </div>
+          <div class="block-main-content">
+            <div class="row">
+              <label class="col-8">Total funds at closing</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(downPayment) }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Down Payment</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(closingCost) }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Closing Costs</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(closingCost) }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Post Closing Reserves</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(closingCost) }}</span>
+            </div>
+          </div>
+
+          <div class="block-main-header">
+            <h3>INFORMATION ABOUT YOUR POTENTIAL MORTGAGE:</h3>
+          </div>
+          <div class="block-main-content">
+            <div class="row">
+              <label class="col-8">Home Purchase Amount</label>
+              <span class="col-4 block-main-content--right">{{ currencyFormat(mortgageLoanAmount) }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Mortgage Loan Amount</label>
+              <span class="col-4 block-main-content--right">{{ term }}</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Principal & Interest (P&I) Payment</label>
+              <span class="col-4 block-main-content--right">{{ interestRatePercent }}/MO</span>
+            </div>
+            <div class="row">
+              <label class="col-8">Term</label>
+              <span
+                class="col-4 block-main-content--right"
+              >{{ currencyFormat(totalMonthlyPayment) }} YRS</span>
+            </div>
+            <div class="block-main-content--padded">
+              <div class="row">
+                <label class="col-8">Interest Rate</label>
+                <span
+                  class="col-4 block-main-content--right"
+                >{{ currencyFormat( principalInterestPayment ) }}%</span>
+              </div>
+              <div class="row">
+                <label class="col-8">LTV</label>
+                <span
+                  class="col-4 block-main-content--right"
+                >{{ currencyFormat(propertyTaxMonthly) }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 bckBtn">
+            <button
+              class="btn btn-block btn-primary"
+              type="submit"
+              @click.prevent="isSubmitted = !isSubmitted"
+            >
+              <i class="fa fa-caret-left" /> Back to Calculator
+            </button>
+          </div>
+          <div class="col-12">
+            <p>
+              These calculator results are estimates based on your inputs. Contact a bank,
+              credit union, housing advisor, or lender to determine accurate figures.
+            </p>
+          </div>
+        </div>
       </div>
-      <button
-        class="btn btn-block btn-primary"
-        @click.prevent="isSubmitted = !isSubmitted"
-      >Back to Calculator &#8677;</button>
-      <p>These calculator results are estimates based on your inputs. Contact a bank, credit union, housing advisor, or lender to determine accurate figures.</p>
     </div>
   </div>
 </template>
@@ -661,10 +732,6 @@ export default {
       required,
       between: between(0, 20000)
     },
-    grossIncome: {
-      required,
-      between: between(1, 24)
-    },
     carLoan: {
       required,
       between: between(0, 5000)
@@ -713,7 +780,7 @@ export default {
       return this.downPayment / this.mortgageLoanAmount;
     },
     estimatedMonthlyPayment() {
-      return this.grossIncome * this.dti - this.totalDebts;
+      return this.currentSavings * this.dti - this.totalDebts;
     },
     dtiPercent() {
       return this.dti * 100;
@@ -771,7 +838,7 @@ export default {
       return this.pv(
         this.interestRate / 12,
         this.term * 12,
-        this.estimatedMonthlyPayment - this.grossIncome * 0.05
+        this.estimatedMonthlyPayment - this.currentSavings * 0.05
       );
     },
     totalDebts() {
@@ -797,7 +864,6 @@ export default {
         interestRatePercent: 4.25,
         term: 30,
         postClosingReserves: 1869.37,
-        grossIncome: 10,
         carLoan: 500,
         creditCard: 100,
         studentLoan: 150,
@@ -837,6 +903,12 @@ export default {
     },
     currencyFormat(n) {
       return currency.format(n);
+    },
+    formatNumber(num) {
+      return Number(num).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
   }
 };
