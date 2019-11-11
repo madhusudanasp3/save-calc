@@ -301,6 +301,7 @@
                           id="closing-costs-input-field"
                           v-model.number="$v.closingCosts.$model"
                           type="number"
+                          @input="closingCostsDynamics"
                           class="form-control"
                           :class="{
                           'is-invalid':
@@ -311,6 +312,7 @@
                           id="closing-costs-input-range"
                           v-model.number="closingCosts"
                           type="range"
+                          @input="closingCostsDynamics"
                           class="custom-range"
                           min="100"
                           max="50000"
@@ -419,6 +421,7 @@
                           id="post-closing-reserves-input-field"
                           v-model.number="$v.postClosingReserves.$model"
                           type="number"
+                          @input="postClsoingReservesDynamics"
                           class="form-control"
                           :class="{
                             'is-invalid':
@@ -429,6 +432,7 @@
                           id="post-closing-reserves-input-range"
                           v-model.number="postClosingReserves"
                           type="range"
+                          @input="postClsoingReservesDynamics"
                           class="custom-range"
                           min="0"
                           max="20000"
@@ -760,7 +764,18 @@ export default {
       return (this.mortgageLoanAmount / this.homePurchasePrice) * 100;
     },
     fundsAtClosing() {
-      return this.downPayment + this.closingCosts + this.postClosingReserves;
+      if (
+        !this.$v.closingCosts.$invalid &&
+        !this.$v.postClosingReserves.$invalid &&
+        !this.$v.homePurchasePrice.$invalid
+      ) {
+        return (
+          parseFloat(this.downPayment) +
+          parseFloat(this.closingCosts) +
+          parseFloat(this.postClosingReserves)
+        );
+      }
+      return 0;
     },
     additionalSavings() {
       return this.fundsAtClosing - this.currentSavings;
@@ -778,8 +793,6 @@ export default {
       payment =
         (principal * monthlyInterest) /
         (1 - (1 / (1 + monthlyInterest)) ** termInMonths);
-      /* eslint-disable no-console */
-      console.log(`termin months : ${termInMonths}`);
       return payment;
     }
   },
@@ -818,13 +831,16 @@ export default {
       this.postClosingReserves = this.init().postClosingReserves;
     },
     calculateClosingCostAndPostClosingReserve() {
-      this.closingCosts = this.homePurchasePrice * 0.025;
-      this.postClosingReserves = this.piPaymentMonthly * 2;
-      if (this.tab == 0) {
-        this.calculateMonthlyDeposit();
-      }
-      if (this.tab == 1) {
-        this.calculateMonthsToGoal();
+      if (!this.$v.homePurchasePrice.$invalid) {
+        this.closingCosts = this.homePurchasePrice * this.closingCostMultiplier;
+        this.postClosingReserves = this.piPaymentMonthly * 2;
+
+        if (this.tab == 0) {
+          this.calculateMonthlyDeposit();
+        }
+        if (this.tab == 1) {
+          this.calculateMonthsToGoal();
+        }
       }
     },
     downPaymentDynamics() {
@@ -836,6 +852,24 @@ export default {
       }
     },
     currentSavingsDynamics() {
+      if (this.tab == 0) {
+        this.calculateMonthlyDeposit();
+      }
+      if (this.tab == 1) {
+        this.calculateMonthsToGoal();
+      }
+    },
+    closingCostsDynamics() {
+      if (!this.$v.closingCosts.$invalid) {
+        if (this.tab == 0) {
+          this.calculateMonthlyDeposit();
+        }
+        if (this.tab == 1) {
+          this.calculateMonthsToGoal();
+        }
+      }
+    },
+    postClsoingReservesDynamics() {
       if (this.tab == 0) {
         this.calculateMonthlyDeposit();
       }
